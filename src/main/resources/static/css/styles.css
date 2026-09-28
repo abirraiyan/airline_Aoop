@@ -1,0 +1,667 @@
+/* ==========================================================================
+   AEROWING AIRLINES — GLOBAL APPLICATION STYLES
+   Imports Modular Design System, Components, Passenger & Admin Styles.
+   v2.0 — Light/Dark Theme System Fixed
+   ========================================================================== */
+
+@import url('design-system.css');
+@import url('components.css');
+@import url('passenger.css');
+@import url('admin.css');
+
+/* ==========================================================================
+   LEGACY ALIASES — maps old tokens to new semantic tokens
+   ========================================================================== */
+:root {
+    --navy: #0a1f44;
+    --navy-light: var(--navy-700);
+    --sky: var(--aviation-light);
+    --gold: var(--gold-500);
+    --cloud: var(--bg-main);
+    --slate: var(--text-secondary);
+    --white: var(--surface);
+    --aviation-dark: #0a1f44;
+    --aviation-500: var(--aviation-light);
+    --aviation-300: var(--border-focus);
+    --aviation-100: rgba(46, 134, 171, 0.12);
+    --aviation-700: #1b6ca8;
+    --border-strong: var(--border);
+}
+
+/* ==========================================================================
+   LEGACY NAV — kept for non-passenger pages that still use plain <nav>
+   ========================================================================== */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 36px;
+    background: var(--navy-950);
+    color: var(--nav-text);
+    box-shadow: var(--shadow-md);
+}
+
+.brand {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--nav-text);
+}
+
+.brand svg { width: 22px; height: 22px; fill: var(--gold); }
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-links a {
+    color: var(--nav-text);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    transition: background var(--transition-fast);
+}
+
+.nav-links a.primary {
+    background: var(--gold);
+    color: #0a1f44;
+    font-weight: 600;
+}
+
+.nav-links a.primary:hover { background: #d99200; }
+.nav-links a:not(.primary):hover { background: rgba(255,255,255,0.1); }
+
+/* ==========================================================================
+   HERO — Always Dark Gradient (brand-consistent across both themes)
+   ========================================================================== */
+.hero {
+    position: relative;
+    padding: 80px 32px 120px;
+    background: linear-gradient(165deg, #050d1a 0%, #0a1f44 55%, #16366f 100%);
+    color: #ffffff;
+    overflow: hidden;
+    text-align: center;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: -30%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(240,165,0,0.15) 0%, transparent 70%);
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    margin: 0 0 14px;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    position: relative;
+}
+
+.hero p {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.8);
+    margin: 0 0 36px;
+    position: relative;
+}
+
+/* ==========================================================================
+   SEARCH BAR (on hero, on search page)
+   ========================================================================== */
+.search-card {
+    position: relative;
+    max-width: 880px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    box-shadow: var(--shadow-xl);
+    color: var(--text-primary);
+    text-align: left;
+}
+
+.search-field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.search-field input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.search-field input:focus {
+    border-color: var(--border-focus);
+}
+
+.search-btn {
+    align-self: flex-end;
+    background: var(--gold-gradient);
+    color: #0a1f44;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 12px 28px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #e59e0b 0%, #c99400 100%);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.search-note {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   FEATURES GRID
+   ========================================================================== */
+.features {
+    max-width: 1040px;
+    margin: -50px auto 70px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 22px;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 26px;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.feature-card .num {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.feature-card h3 {
+    font-size: 17px;
+    margin: 0 0 8px;
+    color: var(--text-primary);
+}
+
+.feature-card p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* ==========================================================================
+   AUTH PAGES — Login & Register boarding-pass container
+   ========================================================================== */
+.auth-body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    background: linear-gradient(160deg, #050d1a 0%, #0a1f44 55%, #153866 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.brandmark {
+    position: fixed;
+    top: 24px;
+    left: 28px;
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    opacity: 0.95;
+    z-index: 100;
+}
+
+.brandmark svg { width: 20px; height: 20px; fill: var(--gold); }
+
+.pass {
+    display: flex;
+    width: 100%;
+    max-width: 460px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+}
+
+.pass-main {
+    flex: 1;
+    padding: 36px 30px;
+}
+
+.pass-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--aviation-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.pass-main h1 {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    margin: 0 0 24px;
+    color: var(--text-primary);
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.field input, .field select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast);
+    outline: none;
+}
+
+.field input:focus, .field select:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(27, 108, 168, 0.15);
+}
+
+.fly-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    background: var(--gold-gradient);
+    color: #0a1f44;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.fly-btn:hover {
+    background: linear-gradient(135deg, #e59e0b 0%, #c99400 100%);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+#message {
+    margin-top: 14px;
+    font-size: 13px;
+    min-height: 16px;
+}
+
+.signup-row {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.signup-row a {
+    color: var(--aviation-light);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   LOGOUT BUTTON — on dark navbars
+   ========================================================================== */
+.logout-btn {
+    background: transparent;
+    color: var(--nav-text);
+    border: 1.5px solid var(--nav-border);
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+}
+
+.logout-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+
+/* ==========================================================================
+   DASHBOARD & BOOKINGS — content containers
+   ========================================================================== */
+.content {
+    max-width: 960px;
+    margin: 36px auto;
+    padding: 0 24px;
+    width: 100%;
+}
+
+.welcome-card {
+    background: linear-gradient(135deg, #0a1f44 0%, #1b6ca8 100%);
+    color: #ffffff;
+    border-radius: var(--radius-xl);
+    padding: 26px 30px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+}
+
+.welcome-card .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+}
+
+.welcome-card h2 {
+    font-family: var(--font-heading);
+    margin: 0;
+    font-size: 22px;
+    color: #ffffff;
+}
+
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 26px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 22px;
+}
+
+.panel h3 {
+    font-family: var(--font-heading);
+    margin: 0 0 4px;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+.panel .desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 16px;
+}
+
+#status { font-size: 13.5px; }
+
+/* ==========================================================================
+   DATA TABLE (legacy)
+   ========================================================================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+}
+
+th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--surface-subtle);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    color: var(--text-primary);
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.role-ADMIN { background: rgba(217, 119, 6, 0.2); color: var(--warning); border: 1px solid rgba(217, 119, 6, 0.3); }
+.role-PASSENGER { background: rgba(2, 132, 199, 0.2); color: var(--info); border: 1px solid rgba(2, 132, 199, 0.3); }
+
+/* ==========================================================================
+   FLIGHT CARDS (legacy list view)
+   ========================================================================== */
+.flight-row {
+    display: grid;
+    grid-template-columns: 1fr 100px 130px 90px;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 8px;
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--transition-fast);
+}
+
+.flight-row:hover {
+    background-color: var(--surface-subtle);
+}
+
+.flight-row:last-child { border-bottom: none; }
+
+.route {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.route .arrow { color: var(--gold); font-size: 13px; }
+
+.flight-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    font-family: var(--font-mono);
+}
+
+.price {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+.status-SCHEDULED { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+.status-DELAYED { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+.status-CANCELLED { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+
+/* ==========================================================================
+   BOOKING & MY BOOKINGS (legacy)
+   ========================================================================== */
+.seats-left {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.book-btn {
+    background: var(--gold-gradient);
+    color: #0a1f44;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+.book-btn:hover { background: linear-gradient(135deg, #e59e0b 0%, #c99400 100%); transform: translateY(-1px); }
+.book-btn:disabled { background: var(--surface-subtle); color: var(--text-muted); cursor: not-allowed; transform: none; }
+
+.booking-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.booking-card:hover {
+    border-color: var(--border-focus);
+    box-shadow: var(--shadow-md);
+}
+
+.booking-route {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.booking-route .arrow { color: var(--gold); font-size: 13px; }
+
+.booking-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-family: var(--font-mono);
+}
+
+.booking-price {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.status-CONFIRMED { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+.status-PENDING { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+.status-PAYMENT_FAILED { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+
+.cancel-btn {
+    background: transparent;
+    border: 1.5px solid var(--danger-border);
+    color: var(--danger);
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+}
+
+.cancel-btn:hover { background: var(--danger-bg); }
+
+/* ==========================================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================================== */
+@media (max-width: 800px) {
+    .search-card { grid-template-columns: 1fr; }
+    .features { grid-template-columns: 1fr; margin-top: 24px; }
+    .hero { padding: 50px 20px 50px; }
+    nav { padding: 14px 18px; flex-direction: column; gap: 12px; }
+    .flight-row { grid-template-columns: 1fr auto; gap: 10px; }
+    .booking-card { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flights — Aerowing Airlines</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<header class="aerowing-navbar"></header>
+
+<div class="content">
+    <div class="page-head">
+        <h2>Available Flights</h2>
+        <button class="add-toggle-btn" id="addToggleBtn" style="display:none;" onclick="toggleAddForm()">+ Add Flight</button>
+    </div>
+
+    <div class="panel" id="addFlightPanel">
+        <h3 style="margin-top:0;">Schedule New Flight</h3>
+        <p class="desc">Admin flight scheduler with automatic aircraft conflict detection.</p>
+        <div class="form-grid">
+            <div class="field">
+                <label>Origin Airport</label>
+                <input type="text" id="source" placeholder="e.g. Dhaka">
+            </div>
+            <div class="field">
+                <label>Destination Airport</label>
+                <input type="text" id="destination" placeholder="e.g. Dubai">
+            </div>
+            <div class="field">
+                <label>Departure Date & Time</label>
+                <input type="datetime-local" id="departureTime">
+            </div>
+            <div class="field">
+                <label>Arrival Date & Time</label>
+                <input type="datetime-local" id="arrivalTime">
+            </div>
+            <div class="field">
+                <label>Base Price (USD)</label>
+                <input type="number" id="basePrice" placeholder="450">
+            </div>
+            <div class="field">
+                <label>Assigned Aircraft</label>
+                <select id="aircraftId"></select>
+            </div>
+            <button class="submit-btn" onclick="createFlight()">Save Flight</button>
+            <div id="formMessage"></div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div id="status">
+            <div class="skeleton skeleton-text" style="width: 25%; margin-bottom: 1rem;"></div>
+            <div class="skeleton skeleton-card" style="height: 90px; margin-bottom: 1rem;"></div>
+            <div class="skeleton skeleton-card" style="height: 90px;"></div>
+        </div>
+        <div id="flightList"></div>
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="modal-overlay" id="bookingModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div>
+                <h3 class="modal-title" id="modalRoute">Book Flight</h3>
+                <div class="modal-sub" id="modalMeta" style="margin-bottom: 0;"></div>
+            </div>
+            <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="field">
+                <label>Cabin Class</label>
+                <select id="modalSeatClass" onchange="updateModalSeatsLeft()">
+                    <option value="ECONOMY">Economy Class (1.0x)</option>
+                    <option value="BUSINESS">Business Class (2.2x)</option>
+                    <option value="FIRST_CLASS">First Class (3.5x)</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Number of Passengers / Seats</label>
+                <input type="number" id="modalSeatCount" min="1" max="10" value="1" oninput="updateModalPriceEstimate()">
+            </div>
+            <div class="seats-left" id="modalSeatsLeft" style="color: var(--text-muted);"></div>
+            <div class="seats-left" id="modalPriceEstimate" style="font-weight:700; color:var(--text-primary); margin-top:6px; font-size: 13px;"></div>
+
+            <div class="field" style="margin-top:16px;">
+                <label>Payment Gateway</label>
+                <select id="modalPaymentMethod">
+                    <option value="CREDIT_CARD">Credit Card</option>
+                    <option value="WALLET">Digital Wallet</option>
+                    <option value="NET_BANKING">Net Banking</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Card / Account Reference (Simulated)</label>
+                <input type="text" id="modalPaymentRef" value="4111-2222-3333-4444" placeholder="Enter '0000' to test failure/retry">
+                <div class="form-hint">Tip: Use card "0000" to simulate a declined payment & test retry flow.</div>
+            </div>
+
+            <div id="bookingMessage"></div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary modal-cancel" onclick="closeBookingModal()">Cancel</button>
+            <button class="btn btn-accent modal-confirm" onclick="confirmBooking()">Confirm &amp; Pay</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/core/theme.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/notification.js"></script>
+<script src="js/components/navbar.js"></script>
+<script src="js/flights.js"></script>
+<script src="js/assistant-widget.js"></script>
+
+</body>
+</html>

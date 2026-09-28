@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up — Aerowing Airlines</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body class="auth-body">
+
+<a href="index.html" class="brandmark">
+    <svg viewBox="0 0 24 24"><path d="M22 16v-2l-8.5-5V3.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5L22 16z"/></svg>
+    Aerowing Airlines
+</a>
+
+<button class="theme-toggle-btn" style="position: fixed; top: 24px; right: 28px; z-index: 100;" aria-label="Toggle Theme"></button>
+
+<div class="pass">
+    <div class="pass-main">
+        <div class="pass-eyebrow">Boarding Pass &middot; New Traveller</div>
+        <h1>Create Your Account</h1>
+
+        <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Captain / Passenger Name">
+        </div>
+        <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <div class="field">
+            <label>Account Type</label>
+            <select id="role">
+                <option value="PASSENGER">Passenger</option>
+                <option value="ADMIN">Admin (Staff Access)</option>
+            </select>
+        </div>
+        <button class="fly-btn" onclick="registerUser()">Create Account</button>
+        <div id="message"></div>
+
+        <div class="signup-row">
+            Already flying with us? <a href="login.html">Log in</a>
+        </div>
+    </div>
+</div>
+
+<script src="js/core/theme.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/notification.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

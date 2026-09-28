@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Management — Aerowing Airlines Admin</title>
+    <meta name="description" content="Aerowing Airlines administrative reservation management, passenger seat allocations, and booking auditing.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<div id="admin-main-container">
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <h2 style="font-size: 1.5rem; margin: 0; font-weight: 700;">Reservation &amp; Booking Management</h2>
+            <p style="color: var(--text-secondary); margin: 4px 0 0; font-size: 0.88rem;">
+                Audit all passenger reservations, inspect seat allocations, view payment transactions, and handle cancellations.
+            </p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-outline" id="btn-refresh-bookings" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                Refresh Bookings
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="admin-card">
+        <div class="admin-filter-bar">
+            <div class="admin-search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="booking-search-input" placeholder="Search by reference (e.g. AW-BK-0001), passenger, route...">
+            </div>
+            <select class="admin-select" id="booking-status-filter" aria-label="Filter by booking status">
+                <option value="ALL">All Booking Statuses</option>
+                <option value="CONFIRMED">Confirmed</option>
+                <option value="PENDING">Pending</option>
+                <option value="CANCELLED">Cancelled</option>
+                <option value="PAYMENT_FAILED">Payment Failed</option>
+            </select>
+            <select class="admin-select" id="booking-class-filter" aria-label="Filter by cabin class">
+                <option value="ALL">All Cabin Classes</option>
+                <option value="ECONOMY">Economy</option>
+                <option value="BUSINESS">Business</option>
+                <option value="FIRST_CLASS">First Class</option>
+            </select>
+            <button type="button" class="btn btn-outline" id="btn-clear-booking-filters" style="font-size: 0.85rem; padding: 0.5rem 0.85rem;">
+                Clear
+            </button>
+        </div>
+
+        <div class="admin-card-body table-responsive">
+            <table class="admin-table" id="bookings-table">
+                <thead>
+                    <tr>
+                        <th>Booking Ref</th>
+                        <th>Passenger</th>
+                        <th>Route</th>
+                        <th>Departure</th>
+                        <th>Seats</th>
+                        <th>Class</th>
+                        <th>Assigned Seats</th>
+                        <th>Fare</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bookings-table-body">
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                            <span class="spinner-border spinner-border-sm" role="status"></span> Loading bookings...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Booking Details Modal -->
+<div class="admin-modal-backdrop" id="modal-booking-details" style="display: none;">
+    <div class="admin-modal modal-lg">
+        <div class="admin-modal-header">
+            <div>
+                <span class="brand-badge" id="modal-booking-ref-badge" style="font-size: 0.72rem; margin-bottom: 2px;">AW-BK-0000</span>
+                <h3 id="modal-booking-title">Booking Details</h3>
+            </div>
+            <button type="button" class="admin-modal-close" id="btn-close-booking-modal">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <!-- Journey Header -->
+            <div style="background: var(--surface-subtle); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                    <div style="font-size: 1.2rem; font-weight: 700;">
+                        <span id="detail-flight-route">Origin &rarr; Destination</span>
+                    </div>
+                    <span class="status-badge confirmed" id="detail-booking-status">CONFIRMED</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; font-size: 0.84rem;">
+                    <div><span style="color: var(--text-muted);">Departure:</span> <strong id="detail-dep-time">--</strong></div>
+                    <div><span style="color: var(--text-muted);">Arrival:</span> <strong id="detail-arr-time">--</strong></div>
+                    <div><span style="color: var(--text-muted);">Aircraft:</span> <strong id="detail-aircraft">--</strong></div>
+                    <div><span style="color: var(--text-muted);">Booking Date:</span> <span id="detail-booking-date">--</span></div>
+                </div>
+            </div>
+
+            <!-- Traveler & Seat Breakdown Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+                <div style="background: var(--bg-main); padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Passenger Profile</div>
+                    <div style="font-size: 0.95rem; font-weight: 700;" id="detail-passenger-name">--</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);" id="detail-passenger-email">--</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;" id="detail-passenger-phone">--</div>
+                    <div style="margin-top: 6px;">
+                        <span class="brand-badge" id="detail-passenger-tier" style="font-size: 0.7rem;">SILVER</span>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-main); padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Cabin &amp; Seats Allocation</div>
+                    <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Class:</span>
+                        <span class="cabin-badge eco" id="detail-seat-class">ECONOMY</span>
+                        <span style="font-size: 0.85rem;">(<span id="detail-seat-count">1</span> seats)</span>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Assigned Seat Numbers:</span>
+                        <div id="detail-seat-numbers" style="margin-top: 4px; display: flex; gap: 4px; flex-wrap: wrap;">
+                            <span class="brand-badge" style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;">11A</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financials & Payment Audit -->
+            <h4 style="margin: 0 0 0.5rem; font-size: 0.95rem;">Payment Audit &amp; Transactions</h4>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Tx ID</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-booking-payments">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1rem;">
+                                No payments recorded for this booking.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="admin-modal-footer" style="justify-content: space-between;">
+            <div>
+                <button type="button" class="btn btn-outline btn-sm" id="btn-admin-cancel-booking" style="color: #ef4444; border-color: rgba(239,68,68,0.3); display: none;">
+                    Cancel Reservation &amp; Refund
+                </button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-secondary" id="btn-dismiss-booking-modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../js/core/api.js"></script>
+<script src="../js/core/auth.js"></script>
+<script src="../js/core/theme.js"></script>
+<script src="../js/components/notifications.js"></script>
+<script src="../js/components/admin-shell.js"></script>
+<script src="./js/admin-bookings.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings — Aerowing Airlines</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/passenger.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<header class="aerowing-navbar"></header>
+
+<main class="passenger-portal-container">
+    <!-- Page Header & Filter Search -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+        <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase; letter-spacing: 0.75px; margin-bottom: 4px;">Traveller Portal</div>
+            <h1 style="font-family: var(--font-display); font-size: 1.85rem; font-weight: 700; color: var(--text-primary); margin: 0;">My Bookings &amp; Trips</h1>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <input type="text" id="bookingSearchInput" class="form-control" placeholder="Search by city, ref or flight..." style="min-width: 260px;" oninput="handleSearchFilter()">
+            <a href="/search.html" class="btn btn-primary" style="white-space: nowrap;">+ Book New Flight</a>
+        </div>
+    </div>
+
+    <!-- Categorization Tabs -->
+    <div class="filter-tabs-bar" id="bookingsTabBar">
+        <button class="filter-tab-item active" data-tab="ALL" onclick="switchTab('ALL')">
+            All Bookings <span class="tab-badge-count" id="count-ALL">0</span>
+        </button>
+        <button class="filter-tab-item" data-tab="UPCOMING" onclick="switchTab('UPCOMING')">
+            Upcoming <span class="tab-badge-count" id="count-UPCOMING">0</span>
+        </button>
+        <button class="filter-tab-item" data-tab="COMPLETED" onclick="switchTab('COMPLETED')">
+            Completed <span class="tab-badge-count" id="count-COMPLETED">0</span>
+        </button>
+        <button class="filter-tab-item" data-tab="CANCELLED" onclick="switchTab('CANCELLED')">
+            Cancelled <span class="tab-badge-count" id="count-CANCELLED">0</span>
+        </button>
+        <button class="filter-tab-item" data-tab="PAYMENT_FAILED" onclick="switchTab('PAYMENT_FAILED')">
+            Payment Failed <span class="tab-badge-count" id="count-PAYMENT_FAILED">0</span>
+        </button>
+    </div>
+
+    <!-- Bookings Feed / Loading State -->
+    <div id="bookingList">
+        <div class="skeleton skeleton-card" style="height: 120px; margin-bottom: 1rem;"></div>
+        <div class="skeleton skeleton-card" style="height: 120px; margin-bottom: 1rem;"></div>
+        <div class="skeleton skeleton-card" style="height: 120px;"></div>
+    </div>
+</main>
+
+<!-- Modal: Cancel Booking Confirmation -->
+<div id="cancelModalOverlay" class="modal-overlay" style="display: none;">
+    <div class="modal-sheet" style="max-width: 480px;">
+        <div class="modal-header">
+            <h3 style="margin: 0; color: var(--danger);">Cancel Flight Reservation</h3>
+            <button type="button" class="modal-close" onclick="closeCancelModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="cancelModalBody" style="padding: 1.25rem 0;">
+            <!-- Rendered dynamically -->
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn btn-outline" onclick="closeCancelModal()">Keep Booking</button>
+            <button type="button" class="btn btn-danger" id="confirmCancelBtn" onclick="executeCancellation()">Confirm Cancellation</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Retry Payment -->
+<div id="retryPaymentModalOverlay" class="modal-overlay" style="display: none;">
+    <div class="modal-sheet" style="max-width: 480px;">
+        <div class="modal-header">
+            <h3 style="margin: 0; color: var(--text-primary);">Complete Your Payment</h3>
+            <button type="button" class="modal-close" onclick="closeRetryModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 1.25rem 0;">
+            <div id="retryModalSummary" style="margin-bottom: 1.25rem; font-size: 0.9rem;"></div>
+            
+            <div class="field" style="margin-bottom: 1rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Payment Method</label>
+                <select id="retryMethodSelect" class="form-control" onchange="toggleRetryMethodFields()">
+                    <option value="CREDIT CARD">Credit / Debit Card</option>
+                    <option value="WALLET">Digital Wallet</option>
+                    <option value="NET BANKING">Net Banking</option>
+                </select>
+            </div>
+
+            <div id="retryCardFields">
+                <div class="field" style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Card Number</label>
+                    <input type="text" id="retryCardNumber" class="form-control" placeholder="4111 2222 3333 4444" value="4111222233334444">
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">Use '0000' to simulate payment decline.</small>
+                </div>
+            </div>
+            
+            <div id="retryWalletFields" style="display: none;">
+                <div class="field" style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Wallet ID</label>
+                    <input type="text" id="retryWalletId" class="form-control" placeholder="user@wallet" value="wallet-aerowing-user">
+                </div>
+            </div>
+
+            <div id="retryBankFields" style="display: none;">
+                <div class="field" style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Bank Account / Reference</label>
+                    <input type="text" id="retryBankRef" class="form-control" placeholder="BANK-REF-9988" value="BANK-ACC-100234">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn btn-outline" onclick="closeRetryModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" id="submitRetryBtn" onclick="executePaymentRetry()">Pay &amp; Confirm Booking</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/core/theme.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/notification.js"></script>
+<script src="js/components/navbar.js"></script>
+<script src="js/bookings.js"></script>
+<script src="js/assistant-widget.js"></script>
+
+</body>
+</html>

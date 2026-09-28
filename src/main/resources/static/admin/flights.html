@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Management &amp; Scheduling — Aerowing Airlines Admin</title>
+    <meta name="description" content="Aerowing Airlines flight operations scheduling, route management, conflict monitoring, and aircraft allocation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<div id="admin-main-container">
+    <!-- Header with Add Flight Action -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <h2 style="font-size: 1.5rem; margin: 0; font-weight: 700;">Flight Operations &amp; Scheduling</h2>
+            <p style="color: var(--text-secondary); margin: 4px 0 0; font-size: 0.88rem;">
+                Manage commercial routes, dispatch statuses, aircraft allocations, and schedule conflict validation.
+            </p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-outline" id="btn-refresh-flights" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                Refresh
+            </button>
+            <button type="button" class="btn btn-primary" id="btn-open-create-flight" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                &plus; Create Flight
+            </button>
+        </div>
+    </div>
+
+    <!-- Conflict Warning Alert Box (hidden by default) -->
+    <div class="conflict-card" id="global-conflict-alert" style="display: none;">
+        <svg class="conflict-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+            <div class="conflict-title">Operational Alert</div>
+            <div class="conflict-desc" id="global-conflict-message">Scheduling conflict detected on active aircraft.</div>
+        </div>
+    </div>
+
+    <!-- Table Card with Filter Bar -->
+    <div class="admin-card">
+        <div class="admin-filter-bar">
+            <div class="admin-search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="flight-search-input" placeholder="Search by flight ID, origin, or destination...">
+            </div>
+            <select class="admin-select" id="flight-status-filter" aria-label="Filter by flight status">
+                <option value="ALL">All Statuses</option>
+                <option value="SCHEDULED">Scheduled</option>
+                <option value="DELAYED">Delayed</option>
+                <option value="CANCELLED">Cancelled</option>
+            </select>
+            <button type="button" class="btn btn-outline" id="btn-clear-filters" style="font-size: 0.85rem; padding: 0.5rem 0.85rem;">
+                Clear Filters
+            </button>
+        </div>
+
+        <div class="admin-card-body table-responsive">
+            <table class="admin-table" id="flights-table">
+                <thead>
+                    <tr>
+                        <th>Flight</th>
+                        <th>Route</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Aircraft</th>
+                        <th>Base Fare</th>
+                        <th>Cabin Seats Available</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="flights-table-body">
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                            <span class="spinner-border spinner-border-sm" role="status"></span> Loading flight records...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Create / Add Flight Modal -->
+<div class="admin-modal-backdrop" id="modal-create-flight" style="display: none;">
+    <div class="admin-modal modal-lg">
+        <div class="admin-modal-header">
+            <div>
+                <span class="brand-badge" style="font-size: 0.7rem; margin-bottom: 2px;">Operations Dispatch</span>
+                <h3 id="create-modal-title">Schedule New Flight</h3>
+            </div>
+            <button type="button" class="admin-modal-close" id="btn-close-create-modal">&times;</button>
+        </div>
+        <form id="form-create-flight">
+            <div class="admin-modal-body">
+                <div class="conflict-card" id="form-conflict-alert" style="display: none; margin-bottom: 1rem;">
+                    <svg class="conflict-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <div>
+                        <div class="conflict-title">Aircraft Scheduling Conflict</div>
+                        <div class="conflict-desc" id="form-conflict-message">Aircraft already scheduled during this timeframe.</div>
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="create-source">Origin / Source City *</label>
+                        <input type="text" id="create-source" required placeholder="e.g. Dhaka">
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="create-destination">Destination City *</label>
+                        <input type="text" id="create-destination" required placeholder="e.g. Dubai">
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="create-departure">Departure Date &amp; Time *</label>
+                        <input type="datetime-local" id="create-departure" required>
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="create-arrival">Arrival Date &amp; Time *</label>
+                        <input type="datetime-local" id="create-arrival" required>
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="create-base-price">Base Ticket Fare ($ USD) *</label>
+                        <input type="number" id="create-base-price" step="0.01" min="1" required placeholder="450.00">
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="create-aircraft">Assigned Aircraft *</label>
+                        <select id="create-aircraft" required>
+                            <option value="">Select fleet aircraft...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="create-status">Flight Status</label>
+                    <select id="create-status">
+                        <option value="SCHEDULED" selected>SCHEDULED</option>
+                        <option value="DELAYED">DELAYED</option>
+                        <option value="CANCELLED">CANCELLED</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-create">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-submit-create">Save &amp; Dispatch Flight</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Flight Modal -->
+<div class="admin-modal-backdrop" id="modal-edit-flight" style="display: none;">
+    <div class="admin-modal modal-lg">
+        <div class="admin-modal-header">
+            <div>
+                <span class="brand-badge" style="font-size: 0.7rem; margin-bottom: 2px;">Flight Modification</span>
+                <h3 id="edit-modal-title">Edit Flight Schedule</h3>
+            </div>
+            <button type="button" class="admin-modal-close" id="btn-close-edit-modal">&times;</button>
+        </div>
+        <form id="form-edit-flight">
+            <input type="hidden" id="edit-flight-id">
+            <div class="admin-modal-body">
+                <div class="conflict-card" id="edit-conflict-alert" style="display: none; margin-bottom: 1rem;">
+                    <svg class="conflict-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <div>
+                        <div class="conflict-title">Aircraft Scheduling Conflict</div>
+                        <div class="conflict-desc" id="edit-conflict-message">Aircraft already scheduled during this timeframe.</div>
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="edit-source">Origin City *</label>
+                        <input type="text" id="edit-source" required>
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="edit-destination">Destination City *</label>
+                        <input type="text" id="edit-destination" required>
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="edit-departure">Departure Date &amp; Time *</label>
+                        <input type="datetime-local" id="edit-departure" required>
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="edit-arrival">Arrival Date &amp; Time *</label>
+                        <input type="datetime-local" id="edit-arrival" required>
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label for="edit-base-price">Base Fare ($ USD) *</label>
+                        <input type="number" id="edit-base-price" step="0.01" min="1" required>
+                    </div>
+                    <div class="admin-form-group">
+                        <label for="edit-status">Dispatch Status *</label>
+                        <select id="edit-status">
+                            <option value="SCHEDULED">SCHEDULED</option>
+                            <option value="DELAYED">DELAYED</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="edit-aircraft">Assigned Aircraft</label>
+                    <select id="edit-aircraft">
+                        <option value="">Keep current aircraft</option>
+                    </select>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-edit">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-submit-edit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Flight Confirmation Modal -->
+<div class="admin-modal-backdrop" id="modal-delete-flight" style="display: none;">
+    <div class="admin-modal" style="max-width: 480px;">
+        <div class="admin-modal-header">
+            <div>
+                <span class="brand-badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; font-size: 0.7rem;">Danger Zone</span>
+                <h3>Delete Flight Schedule</h3>
+            </div>
+            <button type="button" class="admin-modal-close" id="btn-close-delete-modal">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <p style="margin-top: 0; color: var(--text-primary);">
+                Are you sure you want to permanently delete flight <strong id="delete-flight-title">--</strong>?
+            </p>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0;">
+                The backend will verify that zero active customer bookings and zero crew assignments depend on this flight before completing deletion.
+            </p>
+        </div>
+        <div class="admin-modal-footer">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-delete">Cancel</button>
+            <button type="button" class="btn btn-danger" id="btn-confirm-delete" style="background: #ef4444; color: white;">
+                Confirm Deletion
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/core/api.js"></script>
+<script src="../js/core/auth.js"></script>
+<script src="../js/core/theme.js"></script>
+<script src="../js/components/notifications.js"></script>
+<script src="../js/components/admin-shell.js"></script>
+<script src="./js/admin-flights.js"></script>
+</body>
+</html>

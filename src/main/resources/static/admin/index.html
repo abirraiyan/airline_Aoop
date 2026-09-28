@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations Control Center — Aerowing Airlines Admin</title>
+    <meta name="description" content="Aerowing Airlines executive operations control center and administration dashboard.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<div id="admin-main-container">
+    <!-- Quick Actions & Live Indicator -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s infinite;"></span>
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
+                    Live MariaDB Telemetry &middot; Operational Control
+                </span>
+            </div>
+            <h2 style="font-size: 1.5rem; margin: 4px 0 0; font-weight: 700;">Executive Dashboard</h2>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-outline" id="btn-refresh-dashboard" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: middle;"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Sync Data
+            </button>
+            <a href="/admin/flights.html" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                &plus; New Flight
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Metric Cards Grid -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Total Flights</div>
+                <div class="metric-value" id="kpi-total-flights">--</div>
+                <div class="metric-sub" id="kpi-flights-sub">Scheduled &amp; In-Service</div>
+            </div>
+            <div class="metric-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Active Bookings</div>
+                <div class="metric-value" id="kpi-active-bookings">--</div>
+                <div class="metric-sub" id="kpi-bookings-sub">Confirmed Reservations</div>
+            </div>
+            <div class="metric-icon-box success">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Registered Travelers</div>
+                <div class="metric-value" id="kpi-total-passengers">--</div>
+                <div class="metric-sub" id="kpi-passengers-sub">Club Members</div>
+            </div>
+            <div class="metric-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Confirmed Revenue</div>
+                <div class="metric-value" id="kpi-confirmed-revenue" style="color: #10b981;">$--</div>
+                <div class="metric-sub" id="kpi-revenue-sub">Settled Transactions</div>
+            </div>
+            <div class="metric-icon-box gold">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Active Aircraft</div>
+                <div class="metric-value" id="kpi-active-aircraft">--</div>
+                <div class="metric-sub" id="kpi-aircraft-sub">Fleet Units</div>
+            </div>
+            <div class="metric-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div>
+                <div class="metric-label">Flight Crew</div>
+                <div class="metric-value" id="kpi-total-crew">--</div>
+                <div class="metric-sub" id="kpi-crew-sub">Pilots &amp; Attendants</div>
+            </div>
+            <div class="metric-icon-box">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Operations Status & Load Factor Breakdown Row -->
+    <div class="status-distribution-grid">
+        <!-- Flight Status Overview Card -->
+        <div class="status-stat-box">
+            <div class="status-stat-header">
+                <div>
+                    <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Flight Status Distribution</h3>
+                    <p style="margin: 2px 0 0; font-size: 0.75rem; color: var(--text-secondary);">Real-time dispatch status of scheduled routes</p>
+                </div>
+                <span class="brand-badge" id="badge-status-total">0 Flights</span>
+            </div>
+
+            <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600;">
+                        <span style="color: #10b981;">&bull; Scheduled</span>
+                        <span id="stat-scheduled-count">0</span>
+                    </div>
+                    <div class="status-progress-track">
+                        <div class="status-progress-fill scheduled" id="bar-scheduled" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600;">
+                        <span style="color: #f59e0b;">&bull; Delayed</span>
+                        <span id="stat-delayed-count">0</span>
+                    </div>
+                    <div class="status-progress-track">
+                        <div class="status-progress-fill delayed" id="bar-delayed" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600;">
+                        <span style="color: #ef4444;">&bull; Cancelled</span>
+                        <span id="stat-cancelled-count">0</span>
+                    </div>
+                    <div class="status-progress-track">
+                        <div class="status-progress-fill cancelled" id="bar-cancelled" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fleet Occupancy Overview Card -->
+        <div class="status-stat-box">
+            <div class="status-stat-header">
+                <div>
+                    <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Overall Fleet Load Factor</h3>
+                    <p style="margin: 2px 0 0; font-size: 0.75rem; color: var(--text-secondary);">Capacity vs. occupied seats across fleet</p>
+                </div>
+                <span class="brand-badge" id="badge-avg-occupancy">0% Load</span>
+            </div>
+
+            <div style="margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <span style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">System Occupancy</span>
+                    <span id="text-occupancy-summary" style="font-size: 0.85rem; font-weight: 600;">0 / 0 Seats</span>
+                </div>
+                <div class="occupancy-meter" style="height: 12px; margin-top: 6px;">
+                    <div class="occupancy-fill" id="bar-fleet-occupancy" style="width: 0%;"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1.25rem; text-align: center;">
+                    <div style="background: var(--bg-main); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">ECONOMY</div>
+                        <div id="stat-eco-avail" style="font-size: 1.1rem; font-weight: 700; color: #2563eb; margin-top: 2px;">--</div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Available</div>
+                    </div>
+                    <div style="background: var(--bg-main); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">BUSINESS</div>
+                        <div id="stat-biz-avail" style="font-size: 1.1rem; font-weight: 700; color: #d4af37; margin-top: 2px;">--</div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Available</div>
+                    </div>
+                    <div style="background: var(--bg-main); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">FIRST CLASS</div>
+                        <div id="stat-first-avail" style="font-size: 1.1rem; font-weight: 700; color: #9333ea; margin-top: 2px;">--</div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Summary Card -->
+        <div class="status-stat-box">
+            <div class="status-stat-header">
+                <div>
+                    <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Financial Operations</h3>
+                    <p style="margin: 2px 0 0; font-size: 0.75rem; color: var(--text-secondary);">Authoritative payment transaction records</p>
+                </div>
+                <span class="brand-badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">MariaDB Payments</span>
+            </div>
+
+            <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border);">
+                    <span style="font-size: 0.82rem; font-weight: 600;">Gross Successful Payments</span>
+                    <span id="stat-gross-revenue" style="font-size: 0.95rem; font-weight: 700; color: #10b981;">$--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border);">
+                    <span style="font-size: 0.82rem; font-weight: 600;">Refunded Transactions</span>
+                    <span id="stat-refunded-revenue" style="font-size: 0.95rem; font-weight: 700; color: #ef4444;">$--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: var(--surface-subtle); border-radius: 8px; border: 1px solid var(--border);">
+                    <span style="font-size: 0.82rem; font-weight: 700;">Net Revenue Collected</span>
+                    <span id="stat-net-revenue" style="font-size: 1.1rem; font-weight: 700; color: var(--gold-500, #d4af37);">$--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Flight Operations Table -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <div>
+                <h3 class="admin-card-title">Flight Operations Dispatch</h3>
+                <p style="margin: 2px 0 0; font-size: 0.78rem; color: var(--text-secondary);">
+                    Current scheduled flights, departure windows, and operational load factors
+                </p>
+            </div>
+            <a href="/admin/flights.html" class="btn btn-outline" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                View All Flights &rarr;
+            </a>
+        </div>
+        <div class="admin-card-body table-responsive">
+            <table class="admin-table" id="table-operations-flights">
+                <thead>
+                    <tr>
+                        <th>Flight</th>
+                        <th>Route</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Aircraft</th>
+                        <th>Status</th>
+                        <th>Occupancy</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-operations-flights">
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                            <span class="spinner-border spinner-border-sm" role="status"></span> Loading operational flight data...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Two-Column Feed: Recent Bookings & Recent Payments -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.5rem;">
+        <!-- Recent Bookings Table -->
+        <div class="admin-card" style="margin-bottom: 0;">
+            <div class="admin-card-header">
+                <div>
+                    <h3 class="admin-card-title">Recent Reservations</h3>
+                    <p style="margin: 2px 0 0; font-size: 0.78rem; color: var(--text-secondary);">Latest customer booking activity</p>
+                </div>
+                <a href="/admin/bookings.html" class="btn btn-outline" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                    Manage &rarr;
+                </a>
+            </div>
+            <div class="admin-card-body table-responsive">
+                <table class="admin-table" id="table-recent-bookings">
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Passenger</th>
+                            <th>Route</th>
+                            <th>Seats</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-recent-bookings">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">
+                                Loading bookings...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Payments Table -->
+        <div class="admin-card" style="margin-bottom: 0;">
+            <div class="admin-card-header">
+                <div>
+                    <h3 class="admin-card-title">Recent Transactions</h3>
+                    <p style="margin: 2px 0 0; font-size: 0.78rem; color: var(--text-secondary);">Payment transaction audit log</p>
+                </div>
+                <a href="/admin/payments.html" class="btn btn-outline" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                    All Payments &rarr;
+                </a>
+            </div>
+            <div class="admin-card-body table-responsive">
+                <table class="admin-table" id="table-recent-payments">
+                    <thead>
+                        <tr>
+                            <th>Tx ID</th>
+                            <th>Booking</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-recent-payments">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">
+                                Loading payments...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../js/core/api.js"></script>
+<script src="../js/core/auth.js"></script>
+<script src="../js/core/theme.js"></script>
+<script src="../js/components/notifications.js"></script>
+<script src="../js/components/admin-shell.js"></script>
+<script src="./js/admin-dashboard.js"></script>
+</body>
+</html>

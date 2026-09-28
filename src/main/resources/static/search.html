@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Flights — Aerowing Airlines</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<header class="aerowing-navbar"></header>
+
+<!-- Top Search Summary Bar -->
+<div class="search-summary-bar">
+    <div class="container">
+        <div class="summary-bar-inner">
+            <div>
+                <div class="summary-route">
+                    <span id="summary-origin">DAC</span>
+                    <svg viewBox="0 0 24 24"><path d="M22 16v-2l-8.5-5V3.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5L22 16z"/></svg>
+                    <span id="summary-dest">DXB</span>
+                </div>
+                <div class="summary-meta" id="summary-meta">Loading search criteria...</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn btn-sm btn-outline" id="btn-toggle-edit-search">Edit Search</button>
+                <button type="button" class="btn btn-sm btn-secondary d-lg-none" id="btn-open-mobile-filters" style="display: none;">Filters</button>
+            </div>
+        </div>
+
+        <!-- Collapsible Search Editor Box -->
+        <div id="search-edit-box" style="display: none; margin-top: 1.25rem; padding: 1.5rem; background: var(--surface-subtle); border-radius: var(--radius-lg); border: 1px solid var(--border);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: flex-end;">
+                <div id="edit-from-container"></div>
+                <div id="edit-to-container"></div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="edit-departure-date">Departure Date</label>
+                    <input type="date" class="form-control" id="edit-departure-date">
+                </div>
+                <div id="edit-passenger-container"></div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="edit-cabin-class">Cabin Class</label>
+                    <select class="form-select" id="edit-cabin-class">
+                        <option value="ECONOMY">Economy</option>
+                        <option value="BUSINESS">Business</option>
+                        <option value="FIRST_CLASS">First Class</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-accent w-full" id="btn-apply-search-update">Update Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main class="container">
+    <div class="search-results-layout">
+        <!-- Filter Sidebar -->
+        <aside class="filter-sidebar" id="filter-sidebar">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+                <h3 style="font-size: 1.15rem; margin: 0;">Filter Flights</h3>
+                <button type="button" class="btn btn-sm btn-ghost" id="btn-clear-filters">Reset</button>
+                <button type="button" class="modal-close d-lg-none" id="btn-close-mobile-filters" style="display: none;">&times;</button>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="filter-group">
+                <div class="filter-title">Maximum Price</div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.5rem;">
+                    <span>Up to</span>
+                    <span id="filter-price-value">$2000</span>
+                </div>
+                <input type="range" class="w-full" id="filter-price-range" min="100" max="2000" step="25" value="2000" style="accent-color: var(--aviation-light);">
+            </div>
+
+            <!-- Stops Filter -->
+            <div class="filter-group">
+                <div class="filter-title">Stops</div>
+                <label class="filter-radio-label">
+                    <input type="radio" name="filter-stops" value="all" checked>
+                    <span>All Routes</span>
+                </label>
+                <label class="filter-radio-label">
+                    <input type="radio" name="filter-stops" value="direct">
+                    <span>Direct Only (Non-Stop)</span>
+                </label>
+                <label class="filter-radio-label">
+                    <input type="radio" name="filter-stops" value="connecting">
+                    <span>1-Stop Connecting</span>
+                </label>
+            </div>
+
+            <!-- Maximum Journey Duration Filter -->
+            <div class="filter-group">
+                <div class="filter-title">Max Journey Duration</div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.5rem;">
+                    <span>Up to</span>
+                    <span id="filter-duration-value">48h</span>
+                </div>
+                <input type="range" class="w-full" id="filter-duration-range" min="2" max="48" step="1" value="48" style="accent-color: var(--aviation-light);">
+            </div>
+
+            <!-- Maximum Layover Duration Filter -->
+            <div class="filter-group">
+                <div class="filter-title">Max Layover Duration</div>
+                <select class="form-select" id="filter-layover">
+                    <option value="all">Any Layover</option>
+                    <option value="120">Under 2 Hours</option>
+                    <option value="240">Under 4 Hours</option>
+                    <option value="480">Under 8 Hours</option>
+                </select>
+            </div>
+
+            <!-- Departure Time Filter -->
+            <div class="filter-group">
+                <div class="filter-title">Departure Time</div>
+                <label class="filter-checkbox-label">
+                    <input type="checkbox" name="filter-time" value="morning">
+                    <span>Morning (06:00 – 12:00)</span>
+                </label>
+                <label class="filter-checkbox-label">
+                    <input type="checkbox" name="filter-time" value="afternoon">
+                    <span>Afternoon (12:00 – 18:00)</span>
+                </label>
+                <label class="filter-checkbox-label">
+                    <input type="checkbox" name="filter-time" value="evening">
+                    <span>Evening (18:00 – 24:00)</span>
+                </label>
+                <label class="filter-checkbox-label">
+                    <input type="checkbox" name="filter-time" value="night">
+                    <span>Night (00:00 – 06:00)</span>
+                </label>
+            </div>
+
+            <!-- Aircraft Model Filter -->
+            <div class="filter-group">
+                <div class="filter-title">Aircraft Type</div>
+                <select class="form-select" id="filter-aircraft">
+                    <option value="all">All Aircraft</option>
+                </select>
+            </div>
+        </aside>
+
+        <!-- Main Results Column -->
+        <section class="results-main-column">
+            <!-- Results Type Tabs (Phase 3) -->
+            <div class="results-type-tabs" id="results-type-tabs">
+                <button type="button" class="type-tab-btn active" data-type="all" id="tab-all-journeys">All Journeys (0)</button>
+                <button type="button" class="type-tab-btn" data-type="direct" id="tab-direct-journeys">Direct Flights (0)</button>
+                <button type="button" class="type-tab-btn" data-type="connecting" id="tab-connecting-journeys">1-Stop Connecting (0)</button>
+            </div>
+
+            <!-- Results Header Bar -->
+            <div class="results-header-bar">
+                <div class="results-count" id="results-count-text">Searching scheduled flights...</div>
+                <div class="results-sort-controls">
+                    <label for="sort-by-select" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Sort By:</label>
+                    <select class="form-select" id="sort-by-select" style="width: auto; min-width: 170px;">
+                        <option value="recommended">Recommended</option>
+                        <option value="cheapest">Cheapest First</option>
+                        <option value="fastest">Fastest Duration</option>
+                        <option value="earliest">Earliest Departure</option>
+                        <option value="latest">Latest Departure</option>
+                        <option value="layover">Shortest Layover</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Flight Results List -->
+            <div id="flight-results-list">
+                <div class="skeleton-card" style="height: 180px; margin-bottom: 1.25rem;"></div>
+                <div class="skeleton-card" style="height: 180px; margin-bottom: 1.25rem;"></div>
+                <div class="skeleton-card" style="height: 180px;"></div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script src="js/core/theme.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/notification.js"></script>
+<script src="js/components/navbar.js"></script>
+<script src="js/components/airport-selector.js"></script>
+<script src="js/components/passenger-dropdown.js"></script>
+<script src="js/components/flight-card.js"></script>
+<script src="js/components/flight-details-drawer.js"></script>
+<script src="js/pages/search.js"></script>
+<script src="js/assistant-widget.js"></script>
+
+</body>
+</html>

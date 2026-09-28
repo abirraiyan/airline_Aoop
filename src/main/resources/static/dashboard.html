@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passenger Dashboard — Aerowing Airlines</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/passenger.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<header class="aerowing-navbar"></header>
+
+<main class="passenger-portal-container">
+    <!-- Welcome Header Banner -->
+    <div class="dashboard-welcome-banner" id="dashboardWelcomeBanner">
+        <div class="welcome-title-group">
+            <h1 id="welcomePassengerName">Loading Dashboard...</h1>
+            <p class="welcome-subtitle">Manage your journeys, bookings and loyalty benefits.</p>
+        </div>
+        <div class="welcome-tier-pill" id="welcomeTierBadge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span id="tierBadgeText">SILVER MEMBER</span>
+        </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="stats-grid-4" id="statsGrid">
+        <div class="portal-stat-card">
+            <span class="stat-label">Upcoming Trips</span>
+            <div class="stat-value" id="statUpcomingCount">-</div>
+            <span class="stat-sub">Confirmed future journeys</span>
+        </div>
+        <div class="portal-stat-card">
+            <span class="stat-label">Completed Trips</span>
+            <div class="stat-value" id="statCompletedCount">-</div>
+            <span class="stat-sub">Flown flights</span>
+        </div>
+        <div class="portal-stat-card">
+            <span class="stat-label">Loyalty Miles</span>
+            <div class="stat-value" id="statMilesCount" style="color: var(--gold-500);">-</div>
+            <span class="stat-sub" id="statMilesSub">Earn 1 mile per $1</span>
+        </div>
+        <div class="portal-stat-card">
+            <span class="stat-label">Current Tier</span>
+            <div class="stat-value" id="statTierName" style="font-size: 1.5rem;">-</div>
+            <span class="stat-sub"><a href="/loyalty.html" style="color: var(--aviation-500); font-weight: 600;">View benefits &rarr;</a></span>
+        </div>
+    </div>
+
+    <!-- Upcoming Journey Hero Section -->
+    <div class="upcoming-journey-section">
+        <div class="section-eyebrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Next Journey
+        </div>
+        <div id="upcomingHeroContainer">
+            <div class="skeleton skeleton-card" style="height: 180px; border-radius: var(--radius-lg);"></div>
+        </div>
+    </div>
+
+    <!-- Manage Booking by Reference Box -->
+    <div class="manage-lookup-box">
+        <div>
+            <div style="font-weight: 700; color: var(--text-primary); font-size: 1rem; margin-bottom: 2px;">Manage Booking by Reference</div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary);">Enter your Aerowing reference (e.g. AW-BK-0028) or numeric ID to view details.</div>
+        </div>
+        <form class="lookup-input-group" id="manageLookupForm" onsubmit="handleManageLookup(event)">
+            <input type="text" id="lookupRefInput" class="form-control" placeholder="e.g. AW-BK-0028" required style="font-family: var(--font-mono); text-transform: uppercase;">
+            <button type="submit" class="btn btn-primary" style="white-space: nowrap;">Find Trip</button>
+        </form>
+    </div>
+
+    <!-- Recent Bookings Section -->
+    <div class="recent-bookings-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">Recent Trips</h3>
+            <a href="/bookings.html" class="btn btn-sm btn-outline">View All Bookings &rarr;</a>
+        </div>
+        <div id="recentBookingsContainer">
+            <div class="skeleton skeleton-card" style="height: 100px; margin-bottom: 1rem;"></div>
+            <div class="skeleton skeleton-card" style="height: 100px;"></div>
+        </div>
+    </div>
+
+    <!-- Admin Directory View (Rendered only when logged in as ADMIN) -->
+    <div class="panel" id="adminTravellersPanel" style="display: none; margin-top: 3rem;">
+        <div class="page-head" style="margin-bottom: 0.5rem;">
+            <h3>Registered Travellers Directory</h3>
+            <span class="brand-badge">ADMIN ACCESS</span>
+        </div>
+        <p class="desc">Live passenger and staff accounts registered in MariaDB/MySQL.</p>
+        <div class="table-wrapper" id="userTableWrapper">
+            <table class="table table-hover" id="userTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Loyalty Tier</th>
+                    <th>Total Miles</th>
+                </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script src="js/core/theme.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/notification.js"></script>
+<script src="js/components/navbar.js"></script>
+<script src="js/pages/dashboard.js"></script>
+<script src="js/assistant-widget.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aerowing Club Loyalty — Aerowing Airlines</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/passenger.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<header class="aerowing-navbar"></header>
+
+<main class="passenger-portal-container">
+    <!-- Hero Loyalty Banner -->
+    <div class="loyalty-hero-banner" id="loyaltyHeroBanner">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.75px; margin-bottom: 4px;">Frequent Flyer Program</div>
+                <h1 style="font-family: var(--font-display); font-size: 2rem; font-weight: 700; margin: 0 0 0.5rem; color: #ffffff;">Aerowing Club Loyalty</h1>
+                <p style="margin: 0; color: rgba(255, 255, 255, 0.75); font-size: 0.95rem;">Earn tier miles on every journey and enjoy elevated privileges worldwide.</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7); text-transform: uppercase;">Active Membership</div>
+                <div id="loyaltyHeroTier" style="font-family: var(--font-display); font-size: 1.85rem; font-weight: 700; color: var(--gold-400);">SILVER</div>
+            </div>
+        </div>
+
+        <!-- Progress to Next Tier -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.15);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.9rem;">
+                <div>
+                    Accumulated Miles: <strong id="loyaltyMilesNumber" style="font-size: 1.25rem; color: #ffffff;">0</strong> mi
+                </div>
+                <div id="loyaltyProgressTargetText" style="color: rgba(255, 255, 255, 0.85); font-weight: 500;">
+                    5,000 miles to Gold
+                </div>
+            </div>
+
+            <div class="loyalty-meter-track">
+                <div class="loyalty-meter-fill" id="loyaltyMeterFill" style="width: 0%;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); font-family: var(--font-mono);">
+                <span>SILVER (0 mi)</span>
+                <span>GOLD (5,000 mi)</span>
+                <span>PLATINUM (15,000+ mi)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tier Comparison Grid -->
+    <div style="margin-bottom: 1.5rem;">
+        <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem;">Membership Tiers &amp; Verified Privileges</h2>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Explore real benefits automatically unlocked as you accumulate tier miles.</p>
+    </div>
+
+    <div class="tier-matrix-grid">
+        <!-- Silver Card -->
+        <div class="tier-card" id="card-SILVER">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: var(--text-primary); margin: 0;">Silver</h3>
+                    <span class="badge badge-muted">0 &ndash; 4,999 mi</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Standard tier membership granted upon joining Aerowing Club.</p>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                    <li>✓ <strong>1 Mile per $1</strong> spent on all flights</li>
+                    <li>✓ Complimentary 20kg baggage</li>
+                    <li>✓ Inflight hot dining service</li>
+                    <li>✓ Online seat selection access</li>
+                </ul>
+            </div>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted);">
+                Base Fare Multiplier: <strong>Standard</strong>
+            </div>
+        </div>
+
+        <!-- Gold Card -->
+        <div class="tier-card" id="card-GOLD">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: var(--gold-600); margin: 0;">Gold</h3>
+                    <span class="badge badge-warning">5,000 &ndash; 14,999 mi</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Elite traveler tier delivering guaranteed fare discounts and expedited airport access.</p>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                    <li>✓ <strong style="color: var(--gold-600);">5% Automatic Fare Discount</strong> at checkout</li>
+                    <li>✓ Priority boarding privileges</li>
+                    <li>✓ Dedicated airport check-in lanes</li>
+                    <li>✓ Priority baggage handling</li>
+                </ul>
+            </div>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted);">
+                Discount: <strong style="color: var(--gold-600);">5% on All Bookings</strong>
+            </div>
+        </div>
+
+        <!-- Platinum Card -->
+        <div class="tier-card" id="card-PLATINUM">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: var(--aviation-600); margin: 0;">Platinum</h3>
+                    <span class="badge badge-primary">15,000+ mi</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">The pinnacle of luxury aviation with premier fare savings and VIP concierge service.</p>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                    <li>✓ <strong style="color: var(--success);">10% Automatic Fare Discount</strong> at checkout</li>
+                    <li>✓ Complimentary +10kg extra baggage</li>
+                    <li>✓ Worldwide Airport VIP lounge access</li>
+                    <li>✓ First-to-board priority lanes</li>
+                </ul>
+            </div>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted);">
+                Discount: <strong style="color: var(--success);">10% on All Bookings</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mileage Accumulation Note -->
+    <div class="detail-card-panel" style="background: var(--surface-subtle);">
+        <div class="detail-panel-title">Loyalty Mileage Statement</div>
+        <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+            <div>Miles are automatically credited upon successful completion of confirmed flight bookings ($1 paid = 1 mile earned). Detailed historical transaction statements with PDF statement exports will be available in an upcoming release.</div>
+        </div>
+    </div>
+</main>
+
+<script src="js/core/theme.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/notification.js"></script>
+<script src="js/components/navbar.js"></script>
+<script src="js/pages/loyalty.js"></script>
+<script src="js/assistant-widget.js"></script>
+
+</body>
+</html>
