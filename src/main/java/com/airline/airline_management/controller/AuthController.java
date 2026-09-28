@@ -6,6 +6,8 @@ import com.airline.airline_management.repository.UserRepository;
 import com.airline.airline_management.config.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,19 +24,19 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail());
 
         if (user == null) {
-            return "User not found";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         }
 
         boolean matches = passwordEncoder.matches(loginRequest.getPassword(), user.getPassword());
 
         if (matches) {
-            return jwtUtil.generateToken(user.getEmail(),user.getRole());
+            return ResponseEntity.ok(jwtUtil.generateToken(user.getEmail(), user.getRole()));
         } else {
-            return "Invalid password";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
         }
     }
 }

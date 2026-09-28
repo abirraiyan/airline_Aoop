@@ -25,7 +25,8 @@ public class JwtUtil {
         if (configuredSecret != null && configuredSecret.trim().length() >= 32) {
             this.secretKey = Keys.hmacShaKeyFor(configuredSecret.trim().getBytes(StandardCharsets.UTF_8));
         } else {
-            this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+            String fallback = "AerowingAirlinesCloudSecretKey2026SecureJwtHmacSha256Stable!";
+            this.secretKey = Keys.hmacShaKeyFor(fallback.getBytes(StandardCharsets.UTF_8));
         }
     }
 
