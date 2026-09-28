@@ -52,11 +52,19 @@ async function loginUser() {
                 window.location.href = role === "ADMIN" ? "dashboard.html" : "flights.html";
             }, 600);
         } else {
+            let errorMsg = "Invalid email or password.";
+            try {
+                const parsed = JSON.parse(resultText);
+                if (parsed && parsed.message) errorMsg = parsed.message;
+                else if (parsed && parsed.error) errorMsg = parsed.error;
+            } catch (e) {
+                if (resultText && resultText.trim()) errorMsg = resultText.trim();
+            }
             if (messageDiv) {
                 messageDiv.style.color = "var(--danger)";
-                messageDiv.innerText = resultText || "Invalid credentials.";
+                messageDiv.innerText = errorMsg;
             }
-            if (window.toast) window.toast.error(resultText || "Invalid email or password.");
+            if (window.toast) window.toast.error(errorMsg);
         }
     } catch (error) {
         if (messageDiv) {

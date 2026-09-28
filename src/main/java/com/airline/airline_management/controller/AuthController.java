@@ -25,10 +25,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        User user = userRepository.findByEmail(loginRequest.getEmail());
+        if (loginRequest == null || loginRequest.getEmail() == null || loginRequest.getPassword() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email and password are required");
+        }
+
+        User user = userRepository.findByEmail(loginRequest.getEmail().trim());
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
         }
 
         boolean matches = passwordEncoder.matches(loginRequest.getPassword(), user.getPassword());
@@ -36,7 +40,7 @@ public class AuthController {
         if (matches) {
             return ResponseEntity.ok(jwtUtil.generateToken(user.getEmail(), user.getRole()));
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
         }
     }
 }
