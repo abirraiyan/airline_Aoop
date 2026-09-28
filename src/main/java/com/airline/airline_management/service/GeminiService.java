@@ -14,6 +14,9 @@ public class GeminiService {
     @Value("${gemini.api.key}")
     private String apiKey;
 
+    @Value("${gemini.model:gemini-1.5-flash}")
+    private String model;
+
     private final RestTemplate restTemplate = createRestTemplate();
 
     private RestTemplate createRestTemplate() {
@@ -42,8 +45,11 @@ public class GeminiService {
 
     private String callGemini(String prompt) {
 
+        String selectedModel = (model != null && !model.isBlank()) ? model.trim() : "gemini-1.5-flash";
         String url =
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key="
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                        + selectedModel
+                        + ":generateContent?key="
                         + apiKey;
 
         Map<String, Object> requestBody = Map.of(

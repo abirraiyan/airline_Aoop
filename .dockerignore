@@ -1,0 +1,16 @@
+.git
+.gitignore
+.env
+.env.*
+application-local.properties
+application-local.yml
+airline_db.sql
+*.sql
+*.dump
+target/
+.idea/
+.vscode/
+*.iml
+*.log
+.DS_Store
+HELP.md

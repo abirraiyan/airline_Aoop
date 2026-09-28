@@ -1,0 +1,43 @@
+# Multi-stage Dockerfile for Aerowing Airlines Spring Boot on Vercel
+
+# -----------------------------------------------------------
+# Stage 1: Build stage with OpenJDK 17 and Maven wrapper
+# -----------------------------------------------------------
+FROM eclipse-temurin:17-jdk-jammy AS build
+WORKDIR /app
+
+# Copy Maven wrapper configuration and dependencies descriptor
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+
+# Make wrapper executable and download dependencies
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+
+# Copy application source code
+COPY src/ ./src/
+
+# Package executable JAR (skip tests during container packaging)
+RUN ./mvnw clean package -DskipTests -B
+
+# -----------------------------------------------------------
+# Stage 2: Production runtime stage
+# -----------------------------------------------------------
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /app
+
+# Run as dedicated non-root application user for production container security
+RUN groupadd -r aerowing && useradd -r -g aerowing aerowing
+
+# Copy the generated Spring Boot fat JAR from the builder stage
+COPY --from=build /app/target/*.jar /app/app.jar
+
+# Set secure ownership
+RUN chown -R aerowing:aerowing /app
+USER aerowing
+
+# Default fallback port if PORT is unset (Vercel assigns PORT dynamically)
+ENV PORT=8080
+EXPOSE 8080
+
+# Execute Spring Boot app configured to bind to Vercel's $PORT
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -Djava.security.egd=file:/dev/./urandom -jar /app/app.jar"]
