@@ -35,9 +35,10 @@ COPY --from=build /app/target/*.jar /app/app.jar
 RUN chown -R aerowing:aerowing /app
 USER aerowing
 
-# Default fallback port if PORT is unset (Vercel assigns PORT dynamically)
-ENV PORT=8080
-EXPOSE 8080
+# Default fallback port if PORT is unset (Vercel routes to port 80 by default)
+ENV PORT=80
+EXPOSE 80 8080
 
-# Execute Spring Boot app configured to bind to Vercel's $PORT
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -Djava.security.egd=file:/dev/./urandom -jar /app/app.jar"]
+# Execute Spring Boot app configured to bind to 0.0.0.0:$PORT
+ENTRYPOINT ["sh", "-c", "exec java -Dserver.port=${PORT:-80} -Dserver.address=0.0.0.0 -Djava.security.egd=file:/dev/./urandom -jar /app/app.jar --server.port=${PORT:-80} --server.address=0.0.0.0"]
+

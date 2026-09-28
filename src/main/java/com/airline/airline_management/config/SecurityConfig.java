@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/*.html", "/admin/**", "/css/**", "/js/**", "/assets/**", "/favicon.ico").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/hello").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/flights", "/api/flights/**", "/api/aircraft", "/api/aircraft/**").permitAll()
                         .requestMatchers("/api/crew/**").hasRole("ADMIN")
                         .requestMatchers("/api/crew-assignments/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/bookings").hasRole("ADMIN")
