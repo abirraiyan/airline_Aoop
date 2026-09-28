@@ -207,8 +207,14 @@ public class BookingController {
 
     @GetMapping("/my")
     public List<Booking> getMyBookings(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return java.util.Collections.emptyList();
+        }
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return java.util.Collections.emptyList();
+        }
         return bookingRepository.findByUser(user);
     }
 
