@@ -1,6 +1,8 @@
 package com.airline.airline_management.service;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -16,51 +18,66 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * client is handled on its own thread, and the server itself runs on
  * a background thread so it doesn't block Spring Boot's startup.
  *
- * This demonstrates real socket programming (java.net.ServerSocket / Socket)
- * combined with multithreading (one thread per client connection).
+ * In serverless container environments (such as Vercel Functions),
+ * raw TCP sockets are bypassed to maintain compatibility with single-port HTTP routing.
  */
 @Component
 public class FlightStatusSocketServer {
 
-    private static final int PORT = 9090;
+    @Value("${socket.server.enabled:true}")
+    private boolean enabled;
 
-    // Thread-safe list since multiple client-handler threads read/write it concurrently
+    @Value("${socket.server.port:9090}")
+    private int port;
+
     private final List<PrintWriter> clientWriters = new CopyOnWriteArrayList<>();
+    private volatile ServerSocket serverSocket;
+    private volatile boolean running = true;
+    private Thread serverThread;
 
     @PostConstruct
     public void start() {
-        Thread serverThread = new Thread(this::runServer, "socket-server-listener");
+        // Vercel serverless containers only permit single-port HTTP routing on $PORT
+        if (!enabled || System.getenv("VERCEL") != null) {
+            System.out.println("[Socket Server] Raw TCP socket server disabled or bypassed in Vercel container environment.");
+            return;
+        }
+
+        serverThread = new Thread(this::runServer, "socket-server-listener");
         serverThread.setDaemon(true); // won't prevent the app from shutting down
         serverThread.start();
     }
 
     private void runServer() {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("[Socket Server] Listening for flight-status clients on port " + PORT);
+        try {
+            serverSocket = new ServerSocket(port);
+            System.out.println("[Socket Server] Listening for flight-status clients on port " + port);
 
-            while (true) {
-                Socket clientSocket = serverSocket.accept(); // blocks until a client connects
-                System.out.println("[Socket Server] New client connected: " + clientSocket.getInetAddress());
+            while (running && serverSocket != null && !serverSocket.isClosed()) {
+                try {
+                    Socket clientSocket = serverSocket.accept(); // blocks until a client connects
+                    System.out.println("[Socket Server] New client connected: " + clientSocket.getInetAddress());
 
-                // Each client gets its own thread so multiple clients can stay
-                // connected simultaneously without blocking each other.
-                Thread clientThread = new Thread(() -> handleClient(clientSocket));
-                clientThread.start();
+                    Thread clientThread = new Thread(() -> handleClient(clientSocket));
+                    clientThread.setDaemon(true);
+                    clientThread.start();
+                } catch (IOException e) {
+                    if (!running) break;
+                    System.out.println("[Socket Server] Accept interrupted: " + e.getMessage());
+                }
             }
-        } catch (IOException e) {
-            System.out.println("[Socket Server] Failed to start: " + e.getMessage());
+        } catch (Throwable t) {
+            System.out.println("[Socket Server] Socket server stopped or unable to bind port " + port + ": " + t.getMessage());
         }
     }
 
     private void handleClient(Socket clientSocket) {
-        try {
-            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
+        try (clientSocket;
+             PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true)) {
             clientWriters.add(writer);
             writer.println("Connected to Aerowing live flight-status feed.");
 
-            // Keep this thread alive for as long as the client stays connected.
-            // We don't need to read anything from the client for this use case.
-            while (!clientSocket.isClosed()) {
+            while (running && !clientSocket.isClosed()) {
                 Thread.sleep(1000);
             }
         } catch (Exception e) {
@@ -70,13 +87,28 @@ public class FlightStatusSocketServer {
         }
     }
 
+    @PreDestroy
+    public void stop() {
+        running = false;
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+            } catch (IOException ignored) {}
+        }
+        if (serverThread != null && serverThread.isAlive()) {
+            serverThread.interrupt();
+        }
+    }
+
     /**
      * Called from anywhere in the app (e.g. FlightController) to push a
      * live message out to every currently connected socket client.
      */
     public void broadcast(String message) {
         for (PrintWriter writer : clientWriters) {
-            writer.println(message);
+            try {
+                writer.println(message);
+            } catch (Exception ignored) {}
         }
     }
-}
+}

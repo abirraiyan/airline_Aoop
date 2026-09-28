@@ -39,6 +39,8 @@ USER aerowing
 ENV PORT=80
 EXPOSE 80 8080
 
-# Execute Spring Boot app configured to bind to 0.0.0.0:$PORT
-ENTRYPOINT ["sh", "-c", "exec java -Dserver.port=${PORT:-80} -Dserver.address=0.0.0.0 -Djava.security.egd=file:/dev/./urandom -jar /app/app.jar --server.port=${PORT:-80} --server.address=0.0.0.0"]
+# Execute Spring Boot app configured to bind to 0.0.0.0:$PORT with standard heap limits & signal handling
+ENTRYPOINT ["sh", "-c", "exec java -Xms256m -Xmx512m -Dserver.port=${PORT:-80} -Dserver.address=0.0.0.0 -Djava.security.egd=file:/dev/./urandom -jar /app/app.jar --server.port=${PORT:-80} --server.address=0.0.0.0"]
+
+
 

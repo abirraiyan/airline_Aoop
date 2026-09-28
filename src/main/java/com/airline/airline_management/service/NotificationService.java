@@ -39,4 +39,9 @@ public class NotificationService {
             Thread.currentThread().interrupt();
         }
     }
+
+    @jakarta.annotation.PreDestroy
+    public void shutdown() {
+        executor.shutdown();
+    }
 }
